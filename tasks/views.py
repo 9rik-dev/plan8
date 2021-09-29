@@ -1,3 +1,6 @@
-from django.shortcuts import render
+#!/usr/bin/env python3
 
-# Create your views here.
+from rest_framework.views import APIView
+
+class APITasks(APIView):
+    pass
