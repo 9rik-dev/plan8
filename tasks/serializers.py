@@ -29,4 +29,5 @@ class TaskSerializer(ModelSerializer):
             "creator",
             "executor"
             )
-        depth = 2
+        # This causes not null constraint error
+        # depth = 2
