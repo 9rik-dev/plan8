@@ -45,9 +45,9 @@ class APITasks(APIView):
 
 
         except Task.DoesNotExist:  # invalid pk
-            err = {"error": f"entry with id <{pk}> does not exist"}
+            err = {"entry_errors": [f"entry with id <{pk}> does not exist",]}
         except KeyError:  # invalid sort
-            err = {"error": f"sort by <{sort_by}> not allowed"}
+            err = {"sort_errors": [f"sort by <{sort_by}> not allowed",]}
         return Response(err, status=HTTP_404_NOT_FOUND)
 
 
@@ -58,8 +58,13 @@ class APITasks(APIView):
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
             saved = serializer.save()
-            return Response({"success": f"created task with id {saved.id}"},
+            return Response(
+                {"success": f"created task with id {saved.id}"},
                 status=HTTP_201_CREATED)
+        return Response(
+            serializer.errors,
+            status=HTTP_400_BAD_REQUEST)
+
 
     # Veird behaviour with read_only and auto_add fields
     # it accepts them but doesn't do anything
