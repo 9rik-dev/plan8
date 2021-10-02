@@ -46,4 +46,4 @@ class Developer(User):
 class Manager(User):
     pass
 
-MODELS = [Task, Developer, Manager]
+all_models = [Task, Developer, Manager]

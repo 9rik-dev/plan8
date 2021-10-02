@@ -8,6 +8,7 @@ from .serializers import (
     )
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_400_BAD_REQUEST,
@@ -24,8 +25,23 @@ SORTS = {
 
 class APITasks(APIView):
 
+    # check permissions
+    # permission_classes = (IsAuthenticated,)
+    def check_permissions(self, request):
+        for p in self.get_permissions():
+            print(p)
+
+
     def get(self, request, pk=None, sort_by=None):
         print("--GET--".center(60, "#"))
+        for d in dir(self.request):
+            try:
+                print(f"{d} == {getattr(self.request, d)}")
+            except NotImplementedError:
+                pass
+        print(f"{request.auth = :}")
+        print(f"{request.user = :}")
+
 
         try:
             if pk:
