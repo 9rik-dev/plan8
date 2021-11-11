@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from os import environ
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,8 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # user
+    # User defined
     "tasks",
+    # "users",
 
     # 3rd party
     "rest_framework"
@@ -136,3 +138,52 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#####################################################################
+
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
+    }
+}
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": environ["PG_DB_NAME"],
+#         "USER": environ["PG_USER"],
+#         "PASSWORD": environ["PG_PASSWD"],
+#         "HOST": environ["PG_HOST"],
+#         "PORT": environ["PG_PORT"],
+#     }
+# }
+
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+
+SECRET_KEY = environ["SECRET_KEY"]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    # SimpleJWT stuff, turned off for permissions testing
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # )
+}
+
+SIMPLE_JWT = {
+    # Testing, set 20 min after
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
+    # Testing, remove after
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=5),
+}
+# Uncomment when using custom User Model
+# AUTH_USER_MODEL = "users.Account"  # user defined Model

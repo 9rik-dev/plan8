@@ -3,16 +3,31 @@ from django.db import models
 
 class Task(models.Model):
 
+    """
+    Custom model manager
+    class ManagerTasks(models.Manager):
+        def get_queryset(self, id):
+            return super().get_queryset().filter(creator=id)
+    objects = model.Manager()  # default one
+    asigned = ManagerTasks()  # custom manger
+    """
+    status_options = (
+        ("open", "Open"), ("developing", "Developing"),
+        ("review", "Review"), ("closed", "Closed"))
+    priority_options = (
+        ("low", "Low"), ("medium", "Medium"),
+        ("high", "High"), ("critical", "Critical"))
+
     title = models.CharField(max_length=100)
     description = models.TextField()
     creation_date = models.DateField(
         auto_now_add=True, db_index=True)
     status = models.SmallIntegerField(default=0)
     prior = models.SmallIntegerField(default=0)
-    creator = models.ForeignKey(
-        "Manager", on_delete=models.CASCADE)
-    executor = models.ForeignKey(
-        "Developer", on_delete=models.CASCADE)
+    # creator = models.ForeignKey(
+    #     "Manager", on_delete=models.CASCADE)
+    # executor = models.ForeignKey(
+    #     "Developer", on_delete=models.CASCADE)
 
 
     class Meta:

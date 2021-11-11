@@ -8,7 +8,10 @@ from .serializers import (
     )
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser
+    )
 from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_400_BAD_REQUEST,
@@ -25,22 +28,34 @@ SORTS = {
 
 class APITasks(APIView):
 
+    # permission_classes = [IsAuthenticated]
+
     # check permissions
     # permission_classes = (IsAuthenticated,)
-    def check_permissions(self, request):
-        for p in self.get_permissions():
-            print(p)
+
+    # def check_permissions(self, request):
+    #     for p in self.get_permissions():
+    #         print(p)
 
 
     def get(self, request, pk=None, sort_by=None):
         print("--GET--".center(60, "#"))
-        for d in dir(self.request):
-            try:
-                print(f"{d} == {getattr(self.request, d)}")
-            except NotImplementedError:
-                pass
-        print(f"{request.auth = :}")
-        print(f"{request.user = :}")
+        # for d in dir(self.request):
+        #     try:
+        #         print(f"{d} == {getattr(self.request, d)}")
+        #     except NotImplementedError:
+        #         pass
+        # print(f"{request.auth = :}")
+        # print(f"{request.user = :}")
+        if request.method == "GET":
+            print("KEK")
+        print(request.META.get("HTTP_AUTHORIZATION", ""))
+        print(request.method)
+        print(request.user)
+        print(f"{request.user.get_all_permissions() = :}")
+        print(f"{request.user.get_group_permissions() = :}")
+        print(f"{request.user.get_username() = :}")
+        # print(f"{request.user.user_permissions() = :}")
 
 
         try:
@@ -95,14 +110,18 @@ class APITasks(APIView):
 
         serializer = TaskSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            print(f"{serializer.initial_data = :}")
+            print(f"{serializer.validated_data = :}")
+            print(f"{serializer.errors = :}")
+            print(f"{serializer.data = :}")
+            # serializer.save()
             return Response(serializer.data,
                 status=HTTP_200_OK)
         return Response(serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST)
+            status=HTTP_400_BAD_REQUEST)
 
 
-    def delete(self, request, pk):
+    def delete(self, request, pk=None):
         print("--DELETE--".center(60, "#"))
 
         return Response(status=HTTP_404_NOT_FOUND)
