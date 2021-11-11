@@ -4,33 +4,24 @@ from rest_framework.serializers import (
     ModelSerializer,
     ValidationError
     )
-from .models import Developer, Manager, Task
+from .models import Task
 
-
-class DeveloperSerializer(ModelSerializer):
-    class Meta:
-        model = Developer
-        fields = ("id", "name")
-
-
-class ManagerSerializer(ModelSerializer):
-    class Meta:
-        model = Manager
-        fields = ("id", "name")
 
 
 class TaskSerializer(ModelSerializer):
     class Meta:
         model = Task
+        # add readonly for id, date
+        # fill in creator automatically from request.user
         fields = (
             "id",
             "title",
             "description",
             "creation_date",
             "status",
-            "prior",
+            "priority",
             # "creator",
-            # "executor",
+            "developers",
             )
         # Supplied without 'fields' variable
         # exclude = ["fieldnames"]

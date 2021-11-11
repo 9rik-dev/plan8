@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 
-from .models import Developer, Manager, Task
-from .serializers import (
-    DeveloperSerializer,
-    ManagerSerializer,
-    TaskSerializer
-    )
+from .models import Task
+from .serializers import TaskSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import (
@@ -113,8 +109,8 @@ class APITasks(APIView):
             print(f"{serializer.initial_data = :}")
             print(f"{serializer.validated_data = :}")
             print(f"{serializer.errors = :}")
-            print(f"{serializer.data = :}")
-            # serializer.save()
+            # print(f"{serializer.data = :}")
+            serializer.save()
             return Response(serializer.data,
                 status=HTTP_200_OK)
         return Response(serializer.errors,

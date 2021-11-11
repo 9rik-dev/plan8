@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import all_models
+from .models import Task
 
 
-for m in all_models:
-    admin.site.register(m)
+admin.site.register(Task)

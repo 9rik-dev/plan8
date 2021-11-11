@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Task(models.Model):
@@ -22,12 +23,16 @@ class Task(models.Model):
     description = models.TextField()
     creation_date = models.DateField(
         auto_now_add=True, db_index=True)
-    status = models.SmallIntegerField(default=0)
-    prior = models.SmallIntegerField(default=0)
+    # status = models.SmallIntegerField(default=0)
+    status = models.CharField(max_length=10,
+        choices=status_options, default="open")
+    # prior = models.SmallIntegerField(default=0)
+    priority = models.CharField(max_length=10,
+        choices=priority_options)
     # creator = models.ForeignKey(
     #     "Manager", on_delete=models.CASCADE)
-    # executor = models.ForeignKey(
-    #     "Developer", on_delete=models.CASCADE)
+    developers = models.ForeignKey(
+        User, on_delete=models.PROTECT)
 
 
     class Meta:
@@ -38,27 +43,4 @@ class Task(models.Model):
     def __str__(self):
         return f"{self.id}: {self.title}"
 
-
-class User(models.Model):
-
-    """Abstact class, does not have a manager,
-    can't be instantiated"""
-
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ["id"]
-        unique_together = (("name", "id"))
-        abstract = True
-
-
-class Developer(User):
-    pass
-
-class Manager(User):
-    pass
-
-all_models = [Task, Developer, Manager]
+all_models = [Task]
