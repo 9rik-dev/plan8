@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     # "users",
 
     # 3rd party
-    "rest_framework"
+    "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 # REST_FRAMEWORK = []

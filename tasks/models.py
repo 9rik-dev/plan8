@@ -2,6 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+CREATOR_ALLOWED_FIELDS = {"description", "status",
+    "priority", "developers"}
+
+DEVELOPER_ALLOWE_FIELDS = {"status"}
+
+MANAGER = 0
+DEVELOPER = 1
+
 class Task(models.Model):
 
     """
@@ -23,24 +31,43 @@ class Task(models.Model):
     description = models.TextField()
     creation_date = models.DateField(
         auto_now_add=True, db_index=True)
-    # status = models.SmallIntegerField(default=0)
     status = models.CharField(max_length=10,
         choices=status_options, default="open")
-    # prior = models.SmallIntegerField(default=0)
     priority = models.CharField(max_length=10,
         choices=priority_options)
-    # creator = models.ForeignKey(
-    #     "Manager", on_delete=models.CASCADE)
-    developers = models.ForeignKey(
-        User, on_delete=models.PROTECT)
+    rejected = models.BooleanField(default=False)
+
+    manager = models.ForeignKey("Manager",
+        on_delete=models.SET_NULL, null=True, blank=True)
+
+    # creator = models.ManyToManyField(
+    #     User, related_name="creator")
+    # developers = models.ManyToManyField(
+    #     User, related_name="developers", blank=True)
 
 
     class Meta:
         ordering = ["creation_date"]
         unique_together = (
-            ("title", "description"))
+            # Can't create same tasks, manager can't create task with existing title
+            ("title", "description"))#, ("creator", "title"))
 
     def __str__(self):
         return f"{self.id}: {self.title}"
+
+
+class Manager(models.Model):
+    writable_fields = {"description", "status",
+    "priority", "developers"}
+    role = MANAGER
+    # account = models.OneToOneField()
+
+class Developer(models.Model):
+    role = DEVELOPER
+    writable_fields = {"status"}
+    task = models.ForeignKey(Task, on_delete=models.SET_NULL,
+        null=True, blank=True)
+    # account = models.OneToOneField()
+
 
 all_models = [Task]
