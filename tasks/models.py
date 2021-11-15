@@ -1,9 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager,
-    AbstractUser,
-    PermissionsMixin,
-    )
+    AbstractUser,)
 
 
 class Task(models.Model):
@@ -25,14 +23,15 @@ class Task(models.Model):
         choices=priority_options)
     rejected = models.BooleanField(default=False)
     manager = models.ManyToManyField(
-        "Account", related_name="creator")
+        "Account", related_name="task_set")
     developers = models.ManyToManyField(
-        "Account", related_name="developers", blank=True)  # null=True has no effect
+        "Account", related_name="task", blank=True)  # null=True has no effect
 
     class Meta:
         ordering = ["creation_date"]
         unique_together = (
-            # Can't create same tasks, manager can't create task with existing title
+            # Can't create same tasks,
+            # manager can't create task with existing title
             ("title", "description"))
 
     def __str__(self):
@@ -93,6 +92,10 @@ class Account(AbstractUser):
             self.writable_fields = self.Roles.developer
 
     def __str__(self):
+        return f"{self.first_name}, {self.email}"
+
+    def __repr__(self):
+        # Used for ./manage.py commands
         return f"{self.id}, {self.email}\n{self.is_manager = :}\n{self.writable_fields}\n"
 
     def get_short_name(self):

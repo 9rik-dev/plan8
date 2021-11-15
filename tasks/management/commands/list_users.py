@@ -9,4 +9,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         for user in Account.objects.all():
-            self.stdout.write(self.style.SUCCESS(user))
+            self.stdout.write(self.style.SUCCESS(repr(user)))
