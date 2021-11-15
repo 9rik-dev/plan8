@@ -141,6 +141,7 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+DEFAULT_CHARSET = "utf-8"  # for email charset
 #####################################################################
 
 # Database
@@ -189,3 +190,4 @@ SIMPLE_JWT = {
 }
 # Uncomment when using custom User Model
 # AUTH_USER_MODEL = "users.Account"  # user defined Model
+AUTH_USER_MODEL = "tasks.Account"  # skip module name, logic
