@@ -24,18 +24,12 @@ from .permissions import (
     )
 
 
-SORTS = {
-    "date": "creation_date",
-    "priority": "prior",
-    "status": "status",
-    "id": "id"
-    }
-
-
-# class TasksAPIView(generics.ListCreateAPIView):
-#     user = serializers.HiddenField(
-#         default=serializers.CurrentUserDefault(),
-#     )
+# SORTS = {
+#     "date": "creation_date",
+#     "priority": "prior",
+#     "status": "status",
+#     "id": "id"
+#     }
 
 
 def print_attrs(obj):
@@ -50,6 +44,8 @@ def print_attrs(obj):
 
 
 class APITasks(APIView):
+
+    ordering_fields = {"creation_date", "priority", "status", "id"}
 
     # def check_permissions(self, request):
     #     """Called before request handler is called,
@@ -77,7 +73,21 @@ class APITasks(APIView):
         pass
 
 
-    permission_classes = (ManagerAccessPermission,
+    def get_ordered_by(self, params):
+        # if len(params) > 1:
+        #     raise Exception("Multiple sorts not Allowed")  # multiple orders not allowed 
+        order = params.get("ordering", "id")
+        print(f"{order = :}")
+        if order.strip("-") not in self.ordering_fields:
+            raise Exception("Unsupported fields")  # unsupported fields
+        q = Task.objects.order_by(order)
+        print(f"{order = :}")
+        print(q)
+        return q
+
+
+    permission_classes = (IsAuthenticated,
+        ManagerAccessPermission,
         DeveloperAccessPermission,)
 
     # check permissions
@@ -94,6 +104,8 @@ class APITasks(APIView):
 
     def get(self, request, pk=None, sort_by=None):
         print("--GET--".center(60, "#"))
+        print(request.query_params)
+        # print(request.query_params.get("ordering", "id"))
         # print_attrs(request)
 
         # print(dir(request.user))
@@ -123,14 +135,15 @@ class APITasks(APIView):
                 task = Task.objects.get(pk=pk)
                 return Response(TaskSerializer(task).data)
 
-            elif sort_by:  # by default sorted in Model by date
-                param = "-" + SORTS[sort_by]
-                tasks = Task.objects.order_by(param)
-                return Response(TaskSerializer(tasks).data,
-                    status=HTTP_200_OK)
+            # elif sort_by:  # by default sorted in Model by date
+            #     param = "-" + SORTS[sort_by]
+            #     tasks = Task.objects.order_by(param)
+            #     return Response(TaskSerializer(tasks).data,
+            #         status=HTTP_200_OK)
 
             else:
-                tasks = Task.objects.all()
+                # tasks = Task.objects.all()
+                tasks = self.get_ordered_by(request.query_params)
                 return Response(TaskSerializer(tasks, many=True).data,
                     status=HTTP_200_OK)
 
@@ -155,7 +168,7 @@ class APITasks(APIView):
         # print(f"{request.user.get_username() = :}")
         print(request.user)
         print(type(request.user))
-        request.data["creator"] = [request.user.id,]
+        request.data["manager"] = request.user.id
         print(request.data)
         serializer = TaskSerializer(data=request.data,
             context={"request": request})

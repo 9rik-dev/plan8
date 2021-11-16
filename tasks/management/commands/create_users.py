@@ -47,21 +47,24 @@ class Command(BaseCommand):
             total = 10
 
         try:
+
+            Account.objects.create_superuser(email="admin" + SUFF,
+                password="admin")
+            self.stdout.write(self.style.SUCCESS(f"Created admin!"))
+
             m = int(total * 0.3)
             for i in range(m):
                 Account.objects.create_user(email=FNAMES[i].lower() + SUFF,
                     password=PASSWORD, first_name=FNAMES[i],
                     last_name=LNAMES[i], is_manager=True)
-                self.stdout.write(self.style.SUCCESS(f"Created {m} Managers!"))
+            self.stdout.write(self.style.SUCCESS(f"Created {m} Managers!"))
 
             for i in range(m, total- 1):
                 Account.objects.create_user(email=FNAMES[i].lower() + SUFF,
                     password=PASSWORD, first_name=FNAMES[i],
                     last_name=LNAMES[i])
-                self.stdout.write(self.style.SUCCESS(f"Created {total - 1 - m} Developers!"))
+            self.stdout.write(self.style.SUCCESS(f"Created {total - 1 - m} Developers!"))
 
-            Account.objects.create_superuser(email="admin" + SUFF,
-                password="admin")
 
         except IntegrityError:
             self.stdout.write(self.style.NOTICE(f"Set of Users already exists!"))

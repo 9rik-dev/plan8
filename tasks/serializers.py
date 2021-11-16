@@ -36,13 +36,15 @@ class TaskSerializer(ModelSerializer):
             "description",
             "creation_date",
             "status",
-            "rejected",
+            # "rejected",
             "priority",
             "manager",
-            "developer_set",
+            "developers",
             )
         read_only_fields = ("creation_date", "id")
-
+        extra_kwargs = {
+        "developers": {"required": False}
+        }
         # Supplied without 'fields' variable
         # exclude = ["rejected"]
 
